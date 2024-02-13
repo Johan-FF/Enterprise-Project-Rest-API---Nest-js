@@ -13,8 +13,8 @@ datasource db {
 model Enterprise {
   enterpriseId Int       @id @default(autoincrement())
   name         String
-  createdAt    DateTime
-  updateAt     DateTime
+  createdAt    DateTime  @default(now())
+  updateAt     DateTime  @default(now())
   project      Project[]
   user         User[]
 }
@@ -23,10 +23,10 @@ model Project {
   projectId    Int           @id @default(autoincrement())
   description  String
   name         String
-  startDate    DateTime
-  endDate      DateTime
-  createdAt    DateTime
-  updateAt     DateTime
+  startDate    DateTime      @default(now())
+  endDate      DateTime      @default(now())
+  createdAt    DateTime      @default(now())
+  updateAt     DateTime      @default(now())
   state        String
   enterprise   Enterprise    @relation(fields: [enterpriseId], references: [enterpriseId])
   enterpriseId Int
@@ -46,8 +46,8 @@ model User {
   username            String
   password            String
   profesionalHeadline String
-  createdAt           DateTime
-  updateAt            DateTime
+  createdAt           DateTime      @default(now())
+  updateAt            DateTime      @default(now())
   projectId           Int
   enterprise          Enterprise    @relation(fields: [enterpriseId], references: [enterpriseId])
   enterpriseId        Int

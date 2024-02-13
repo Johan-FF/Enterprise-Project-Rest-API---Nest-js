@@ -2,8 +2,8 @@
 CREATE TABLE "Enterprise" (
     "enterpriseId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL,
-    "updateAt" DATETIME NOT NULL
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updateAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- CreateTable
@@ -11,10 +11,10 @@ CREATE TABLE "Project" (
     "projectId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "description" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "startDate" DATETIME NOT NULL,
-    "endDate" DATETIME NOT NULL,
-    "createdAt" DATETIME NOT NULL,
-    "updateAt" DATETIME NOT NULL,
+    "startDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "endDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updateAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "state" TEXT NOT NULL,
     "enterpriseId" INTEGER NOT NULL,
     CONSTRAINT "Project_enterpriseId_fkey" FOREIGN KEY ("enterpriseId") REFERENCES "Enterprise" ("enterpriseId") ON DELETE RESTRICT ON UPDATE CASCADE
@@ -35,8 +35,8 @@ CREATE TABLE "User" (
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "profesionalHeadline" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL,
-    "updateAt" DATETIME NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updateAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "projectId" INTEGER NOT NULL,
     "enterpriseId" INTEGER NOT NULL,
     CONSTRAINT "User_enterpriseId_fkey" FOREIGN KEY ("enterpriseId") REFERENCES "Enterprise" ("enterpriseId") ON DELETE RESTRICT ON UPDATE CASCADE
