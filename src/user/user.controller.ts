@@ -15,6 +15,7 @@ import { User } from '@prisma/client';
 import { EnterpriseService } from 'src/enterprise/enterprise.service';
 import { UserService } from './user.service';
 import { ProjectService } from 'src/project/project.service';
+import { UserProjectService } from 'src/user-project/user-project.service';
 
 @Controller('user')
 export class UserController {
@@ -22,6 +23,7 @@ export class UserController {
     private readonly userService: UserService,
     private readonly enterpriseService: EnterpriseService,
     private readonly projectService: ProjectService,
+    private readonly userProjectService: UserProjectService,
   ) {}
 
   @Get()
@@ -47,7 +49,14 @@ export class UserController {
         throw new Error('projectId');
 
       if ('userId' in data) delete data.userId;
-      return await this.userService.createUser(data);
+      return await this.userService.createUser(data).then((res: User) => {
+        this.userProjectService.createUserProject({
+          userProjectId: 0,
+          projectId: data.projectId,
+          userId: res.userId,
+        });
+        return res;
+      });
     } catch (error) {
       if (error.message === 'enterpriseId')
         throw new NotFoundException(
