@@ -19,22 +19,104 @@
     <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
   <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+This is a project that implements the Prisma ORM to query a simple database (the database is described in the DB section).
+
 ## Installation
 
-```bash
-$ npm install
+1. Clone the repository:
+
 ```
+git clone https://github.com/Johan-FF/Enterprise-Project-Rest-API---Nest-js.git
+cd Enterprise-Project-Rest-API---Nest-js
+```
+
+2. Install the required dependencies:
+
+```
+npm install
+```
+
+## DB
+
+For the database script see prisma/migrations/20240213152623_init/migration.sql or prisma/schema.prisma.
+
+In general the tables have this structure:
+
+```
+type Enterprise = {
+  enterpriseId: number;
+  name: string;
+  createdAt: Date;
+  updateAt: Date;
+}
+
+type Project = {
+  projectId: number;
+  description: string;
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  createdAt: Date;
+  updateAt: Date;
+  state: string;
+  enterpriseId: number;
+}
+
+type User = {
+  userId: number;
+  username: string;
+  password: string;
+  profesionalHeadline: string;
+  createdAt: Date;
+  updateAt: Date;
+  projectId: number;
+  enterpriseId: number;
+}
+
+type UserProject = {
+  userProjectId: number;
+  projectId: number;
+  userId: number;
+}
+```
+
+The UserProject table has a zero or many relationship with the Project and User tables; the User and Project tables have a zero or many relationship with the Enterprise table.
+
+## API
+
+| METHOD |            URI             |                                                     BODY                                                     |                         DESCRIPTION                          |
+| :----: | :------------------------: | :----------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------: |
+|  GET   |        /enterprise         |                                                                                                              |              Returns a list of type Enterprise.              |
+|  GET   |      /enterprise/:id       |                                                                                                              |              Returns a data of type Enterprise.              |
+|  POST  |        /enterprise         |                                              { name: string; }                                               | Creates and returns the complete Enterprise type structure.  |
+|  PUT   |      /enterprise/:id       |                                              { name: string; }                                               | Updates and returns the complete Enterprise type structure.  |
+| DELETE |      /enterprise/:id       |                                                                                                              | Removes and returns the complete Enterprise type structure.  |
+|  GET   |          /project          |                                                                                                              |               Returns a list of type Project.                |
+|  GET   |        /project/:id        |                                                                                                              |               Returns a data of type Project.                |
+|  POST  |          /project          |                 { description: string; name: string; state: string; enterpriseId: number; }                  |   Creates and returns the complete Project type structure.   |
+|  PUT   |        /project/:id        |                 { description: string; name: string; state: string; enterpriseId: number; }                  |   Updates and returns the complete Project type structure.   |
+|  PUT   |     /project/start/:id     |                                                      {}                                                      |      Updates the value of the Project startDate field.       |
+|  PUT   |      /project/end/:id      |                                                      {}                                                      |       Updates the value of the Project endDate field.        |
+| DELETE |        /project/:id        |                                                                                                              |   Removes and returns the complete Project type structure.   |
+|  GET   |           /user            |                                                                                                              |                 Returns a list of type User.                 |
+|  GET   |         /user/:id          |                                                                                                              |                 Returns a data of type User.                 |
+|  POST  |           /user            | { username: string; password: string; profesionalHeadline: string; projectId: number; enterpriseId: number;} |    Creates and returns the complete User type structure.     |
+|  PUT   |         /user/:id          | { username: string; password: string; profesionalHeadline: string; projectId: number; enterpriseId: number;} |    Updates and returns the complete User type structure.     |
+| DELETE |         /user/:id          |                                                                                                              |    Removes and returns the complete User type structure.     |
+|  GET   |       /user-project        |                                                                                                              |             Returns a list of type UserProject.              |
+|  GET   |     /user-project/:id      |                                                                                                              |             Returns a data of type UserProject.              |
+|  GET   | /user-project/projects/:id |                                                                                                              |       Returns a list of records that have the User ID.       |
+|  GET   |  /user-project/users/:id   |                                                                                                              |     Returns a list of records that have the Project ID.      |
+| DELETE |     /user-project/:id      |                                                                                                              | Removes and returns the complete UserProject type structure. |
 
 ## Running the app
 
-```bash
+```
 # development
 $ npm run start
 
@@ -47,7 +129,7 @@ $ npm run start:prod
 
 ## Test
 
-```bash
+```
 # unit tests
 $ npm run test
 
