@@ -8,6 +8,7 @@ import {
   Param,
   NotFoundException,
   BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { EnterpriseService } from './enterprise.service';
 import { Enterprise } from '@prisma/client';
@@ -61,11 +62,21 @@ export class EnterpriseController {
   @Delete(':id')
   async deleteEnterprise(@Param('id') id: string) {
     try {
+      const enterprise = await this.enterpriseService.getEnterpriseByID(
+        Number(id),
+      );
+      if (!enterprise)
+        throw new NotFoundException(
+          `Enterprise with id: ${id} not exists in DB.`,
+        );
       return await this.enterpriseService.deleteEnterprise(Number(id));
     } catch (error) {
-      throw new NotFoundException(
-        `Enterprise with id: ${id} not exists in DB.`,
-      );
+      if (error instanceof NotFoundException)
+        throw new NotFoundException(
+          `Enterprise with id: ${id} not exists in DB.`,
+        );
+      else
+        throw new ConflictException('It is not possible to delete the record.');
     }
   }
 }

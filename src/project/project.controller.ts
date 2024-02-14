@@ -8,6 +8,7 @@ import {
   Param,
   NotFoundException,
   BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Project } from '@prisma/client';
@@ -36,10 +37,7 @@ export class ProjectController {
   @Post()
   async createProject(@Body() data: Project) {
     try {
-      const enterpriseExist = await this.enterpriseService.getEnterpriseByID(
-        data.enterpriseId,
-      );
-      if (!enterpriseExist)
+      if (await this.verifyEnterpriseNotExists(data.enterpriseId))
         throw new NotFoundException(
           'Enterprise ID incorrect to create a Project.',
         );
@@ -47,7 +45,11 @@ export class ProjectController {
       if ('projectId' in data) delete data.projectId;
       return await this.projectService.createProject(data);
     } catch (error) {
-      throw new BadRequestException('Data types or data are incorrects.');
+      if (error instanceof NotFoundException)
+        throw new NotFoundException(
+          'Enterprise ID incorrect to create a Project.',
+        );
+      else throw new BadRequestException('Data types or data are incorrects.');
     }
   }
 
@@ -56,11 +58,23 @@ export class ProjectController {
     try {
       data = this.validateDataToUpdate(data);
 
+      if (!('enterpriseId' in data))
+        return await this.projectService.updateProject(Number(id), data);
+
+      if (await this.verifyEnterpriseNotExists(data.enterpriseId))
+        throw new NotFoundException(
+          'Enterprise ID incorrect to create a Project.',
+        );
       return await this.projectService.updateProject(Number(id), data);
     } catch (error) {
-      throw new BadRequestException(
-        'Data types are incorrects or id not exists in DB.',
-      );
+      if (error instanceof NotFoundException)
+        throw new NotFoundException(
+          'Enterprise ID incorrect to create a Project.',
+        );
+      else
+        throw new BadRequestException(
+          'Data types are incorrects or id not exists in DB.',
+        );
     }
   }
 
@@ -69,11 +83,24 @@ export class ProjectController {
     try {
       data = this.validateDataToUpdate(data);
       data.startDate = new Date();
+
+      if (!('enterpriseId' in data))
+        return await this.projectService.updateProject(Number(id), data);
+
+      if (await this.verifyEnterpriseNotExists(data.enterpriseId))
+        throw new NotFoundException(
+          'Enterprise ID incorrect to create a Project.',
+        );
       return await this.projectService.updateProject(Number(id), data);
     } catch (error) {
-      throw new BadRequestException(
-        'Data types are incorrects or id not exists in DB.',
-      );
+      if (error instanceof NotFoundException)
+        throw new NotFoundException(
+          'Enterprise ID incorrect to create a Project.',
+        );
+      else
+        throw new BadRequestException(
+          'Data types are incorrects or id not exists in DB.',
+        );
     }
   }
 
@@ -82,20 +109,39 @@ export class ProjectController {
     try {
       data = this.validateDataToUpdate(data);
       data.endDate = new Date();
+
+      if (!('enterpriseId' in data))
+        return await this.projectService.updateProject(Number(id), data);
+
+      if (await this.verifyEnterpriseNotExists(data.enterpriseId))
+        throw new NotFoundException(
+          'Enterprise ID incorrect to create a Project.',
+        );
       return await this.projectService.updateProject(Number(id), data);
     } catch (error) {
-      throw new BadRequestException(
-        'Data types are incorrects or id not exists in DB.',
-      );
+      if (error instanceof NotFoundException)
+        throw new NotFoundException(
+          'Enterprise ID incorrect to create a Project.',
+        );
+      else
+        throw new BadRequestException(
+          'Data types are incorrects or id not exists in DB.',
+        );
     }
   }
 
   @Delete(':id')
   async deleteProject(@Param('id') id: string) {
     try {
+      const project = await this.projectService.getProjectByID(Number(id));
+      if (!project)
+        throw new NotFoundException(`Project with id: ${id} not exists in DB.`);
       return await this.projectService.deleteProject(Number(id));
     } catch (error) {
-      throw new NotFoundException(`Project with id: ${id} not exists in DB.`);
+      if (error instanceof NotFoundException)
+        throw new NotFoundException(`Project with id: ${id} not exists in DB.`);
+      else
+        throw new ConflictException('It is not possible to delete the record.');
     }
   }
 
@@ -106,5 +152,12 @@ export class ProjectController {
     if ('createdAt' in data) delete data.createdAt;
     if ('projectId' in data) delete data.projectId;
     return data;
+  }
+
+  private async verifyEnterpriseNotExists(enterpriseId: number) {
+    const enterpriseExist =
+      await this.enterpriseService.getEnterpriseByID(enterpriseId);
+    if (!enterpriseExist) return true;
+    return false;
   }
 }
