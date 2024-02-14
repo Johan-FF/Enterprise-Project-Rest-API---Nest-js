@@ -36,6 +36,7 @@ export class EnterpriseController {
   @Post()
   async createEnterprise(@Body() data: Enterprise) {
     try {
+      if ('enterpriseId' in data) delete data.enterpriseId;
       return await this.enterpriseService.createEnterprise(data);
     } catch (error) {
       throw new BadRequestException('Data types or data are incorrects.');
