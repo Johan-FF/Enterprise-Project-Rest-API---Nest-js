@@ -43,6 +43,8 @@ npm install
 
 ## DB
 
+[![modelo.png](https://i.postimg.cc/4xW5Ssm4/modelo.png)](https://postimg.cc/dhTr7M2g)
+
 For the database script see prisma/migrations/20240213152623_init/migration.sql or prisma/schema.prisma.
 
 In general the tables have this structure:
